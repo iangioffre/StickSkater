@@ -19,38 +19,18 @@ import GameplayKit
 
 class GameScene: SKScene {
     
-   
+    var playerOptional: SKSpriteNode?
     
     override func didMove(to view: SKView) {
         // Get label node from scene and store it for use later
-        self.physicsBody = SKPhysicsBody()
-    }
-    
-    func touchDown(atPoint pos : CGPoint) {
-        
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
+        playerOptional = self.childNode(withName: "player") as? SKSpriteNode
         
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        if let player = playerOptional, player.position.y <= -130 {
+            player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 325))
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
