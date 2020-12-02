@@ -22,13 +22,9 @@ class GameScene: SKScene {
    
     
     override func didMove(to view: SKView) {
-        
         // Get label node from scene and store it for use later
-       
-        }
-        
-        // Create shape node to use during mouse interaction
-        
+        self.physicsBody = SKPhysicsBody()
+    }
     
     func touchDown(atPoint pos : CGPoint) {
         
@@ -56,7 +52,6 @@ class GameScene: SKScene {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         
     }
-    
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
