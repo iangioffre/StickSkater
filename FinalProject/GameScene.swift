@@ -63,6 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         if firstBody.categoryBitMask == PhysicsCategory.player && secondBody.categoryBitMask == PhysicsCategory.obstacle {
             // player hit obstacle - game over
+            self.isPaused = true
             let alertController = UIAlertController(title: "Game Over", message: "You hit an obstacle!", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
             if let viewController = viewControllerOptional {
