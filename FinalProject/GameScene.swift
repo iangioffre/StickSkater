@@ -16,15 +16,25 @@ import GameplayKit
 // author credit for city image: <div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for hole image: <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
+struct PhysicsCategory {
+    static let player: UInt32 = 0x1 << 0
+    static let obstacle: UInt32 = 0x1 << 1
+}
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var playerOptional: SKSpriteNode?
     var obstacleOptional: SKSpriteNode?
+    var viewControllerOptional: UIViewController?
     
     override func didMove(to view: SKView) {
-        // Get label node from scene and store it for use later
+        physicsWorld.contactDelegate = self
+        
         playerOptional = self.childNode(withName: "player") as? SKSpriteNode
+        if let player = playerOptional {
+            player.physicsBody?.categoryBitMask = PhysicsCategory.player
+            player.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle
+        }
         addObstacle()
     }
     
@@ -39,6 +49,28 @@ class GameScene: SKScene {
         
     }
     
+    func didBegin(_ contact: SKPhysicsContact) {
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+
+        if firstBody.categoryBitMask == PhysicsCategory.player && secondBody.categoryBitMask == PhysicsCategory.obstacle {
+            // player hit obstacle - game over
+            let alertController = UIAlertController(title: "Game Over", message: "You hit an obstacle!", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
+            if let viewController = viewControllerOptional {
+                viewController.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+    
     func addObstacle() {
         // pick random obstacle
         obstacleOptional = SKSpriteNode(imageNamed: "cone")
@@ -50,6 +82,8 @@ class GameScene: SKScene {
             obstacle.zPosition = CGFloat(1)
             obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -25, dy: 0), duration: 0.1)))
             obstacle.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: obstacle.size.width, height: obstacle.size.height), center: CGPoint(x: obstacle.size.width / 2, y: obstacle.size.height / 2))
+            obstacle.physicsBody?.categoryBitMask = PhysicsCategory.obstacle
+            obstacle.physicsBody?.contactTestBitMask = PhysicsCategory.player
             addChild(obstacle)
         }
     }
