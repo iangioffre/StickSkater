@@ -40,7 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let player = playerOptional, player.position.y <= -130 {
-            player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 325))
+            player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 1000))
         }
     }
     
@@ -81,7 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             obstacle.position = CGPoint(x: frame.maxX, y: -225)
             obstacle.size = CGSize(width: 100, height: 100)
             obstacle.zPosition = CGFloat(1)
-            obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -25, dy: 0), duration: 0.1)))
+            obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -35, dy: 0), duration: 0.1)))
             obstacle.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: obstacle.size.width, height: obstacle.size.height), center: CGPoint(x: obstacle.size.width / 2, y: obstacle.size.height / 2))
             obstacle.physicsBody?.categoryBitMask = PhysicsCategory.obstacle
             obstacle.physicsBody?.contactTestBitMask = PhysicsCategory.player
