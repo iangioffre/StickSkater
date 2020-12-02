@@ -44,15 +44,12 @@ class GameScene: SKScene {
         obstacleOptional = SKSpriteNode(imageNamed: "cone")
         // add obstacle to scene
         if let obstacle = obstacleOptional {
-            obstacle.anchorPoint = CGPoint(x: 1, y: 0)
+            obstacle.anchorPoint = CGPoint(x: 0, y: 0)
             obstacle.position = CGPoint(x: frame.maxX, y: -225)
             obstacle.size = CGSize(width: 100, height: 100)
             obstacle.zPosition = CGFloat(1)
-            obstacle.physicsBody = SKPhysicsBody(texture: obstacle.texture!, size: obstacle.texture!.size())
-                       obstacle.physicsBody?.affectedByGravity = false
-                       obstacle.physicsBody?.allowsRotation = false
             obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -25, dy: 0), duration: 0.1)))
-          
+            obstacle.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: obstacle.size.width, height: obstacle.size.height), center: CGPoint(x: obstacle.size.width / 2, y: obstacle.size.height / 2))
             addChild(obstacle)
         }
     }
