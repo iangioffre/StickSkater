@@ -2,7 +2,7 @@
 //  GameViewController.swift
 //  FinalProject
 //
-//  Created by Kierin Noreen on 11/29/20.
+//  Created by Kierin Noreen, Ian Gioffre on 11/29/20.
 //  Copyright © 2020 Kierin Noreen. All rights reserved.
 //
 

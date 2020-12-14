@@ -58,16 +58,24 @@
 		3D5ADFEF2574343C00AFE251 /* FinalProject */ = {
 			isa = PBXGroup;
 			children = (
-				3D5ADFF02574343C00AFE251 /* AppDelegate.swift */,
-				3D5ADFF22574343C00AFE251 /* GameScene.sks */,
 				3D5ADFF62574343C00AFE251 /* GameScene.swift */,
+				3D5ADFF22574343C00AFE251 /* GameScene.sks */,
 				3D5ADFF82574343C00AFE251 /* GameViewController.swift */,
 				3D5ADFFA2574343C00AFE251 /* Main.storyboard */,
+				D16D715C2586EBA400AE2F28 /* Supporting Files */,
 				3D5ADFFD2574343E00AFE251 /* Assets.xcassets */,
-				3D5ADFFF2574343E00AFE251 /* LaunchScreen.storyboard */,
 				3D5AE0022574343E00AFE251 /* Info.plist */,
 			);
 			path = FinalProject;
+			sourceTree = "<group>";
+		};
+		D16D715C2586EBA400AE2F28 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				3D5ADFF02574343C00AFE251 /* AppDelegate.swift */,
+				3D5ADFFF2574343E00AFE251 /* LaunchScreen.storyboard */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
