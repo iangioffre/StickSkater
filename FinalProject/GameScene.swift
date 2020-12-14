@@ -31,18 +31,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode()
     var road = SKSpriteNode()
     var obstacle = SKSpriteNode()
+    var play = SKLabelNode()
     
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
         
         setupSprites()
+        self.isPaused = true
         
 //        playerOptional = self.childNode(withName: "player") as? SKSpriteNode
 //        if let player = playerOptional {
 //            player.physicsBody?.categoryBitMask = PhysicsCategory.player
 //            player.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle
 //        }
-        addObstacle()
     }
     
     func setupSprites() {
@@ -77,17 +78,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(skater)
         
         // obstacles
-        
+        addObstacle()
         
         // buildings
         
         
+        // play button
+        play.fontSize = 100
+        play.fontName = "AvenirNext-Bold"
+        play.fontColor = .black
+        play.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        play.text = "Tap to Play"
+        addChild(play)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let skaterGroundPosition = road.position.y + (road.size.height / 2) + (skater.size.height / 2) + 5
-        if skater.position.y <= skaterGroundPosition {
-            skater.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 300))
+        if self.isPaused {
+            self.removeAllChildren()
+            setupSprites()
+            play.isHidden = true
+            self.isPaused = false
+        } else {
+            let skaterGroundPosition = road.position.y + (road.size.height / 2) + (skater.size.height / 2) + 5
+            if skater.position.y <= skaterGroundPosition {
+                skater.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 300))
+            }
         }
     }
     
@@ -95,11 +111,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if contact.bodyA.categoryBitMask == PhysicsCategory.obstacle.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.obstacle.rawValue {
             // obstacle has been contacted by skater
             self.isPaused = true
-            let alertController = UIAlertController(title: "Game Over", message: "You hit an obstacle!", preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-            if let viewController = viewControllerOptional {
-                viewController.present(alertController, animated: true, completion: nil)
-            }
+//            let alertController = UIAlertController(title: "Game Over", message: "You hit an obstacle!", preferredStyle: .alert)
+//            alertController.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
+//            if let viewController = viewControllerOptional {
+//                viewController.present(alertController, animated: true, completion: nil)
+//            }
+            play.isHidden = false
         }
     }
     
