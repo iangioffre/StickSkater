@@ -33,6 +33,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacle = SKSpriteNode()
     var play = SKLabelNode()
     
+    var gameTimer: Timer?
+    var possibleObstacles = ["garbage", "cone", "hole"]
+    var gameEnded = false
+    
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
         
