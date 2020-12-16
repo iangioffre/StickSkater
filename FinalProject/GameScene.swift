@@ -82,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // road (floor)
 //        road = SKSpriteNode(imageNamed: "road")
 //        road.size = CGSize(width: self.frame.width, height: ROAD_HEIGHT)
-        road = SKSpriteNode(color: .gray, size: CGSize(width: self.frame.width, height: 150))
+        road = SKSpriteNode(color: .darkGray, size: CGSize(width: self.frame.width, height: 150))
         road.position = CGPoint(x: self.frame.midX, y: self.frame.minY + road.size.height / 2)
         road.zPosition = -2
         road.physicsBody = SKPhysicsBody(rectangleOf: road.size)
