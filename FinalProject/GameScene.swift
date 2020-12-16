@@ -80,8 +80,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(ground)
         
         // road (floor)
-//        road = SKSpriteNode(imageNamed: "road")
-//        road.size = CGSize(width: self.frame.width, height: ROAD_HEIGHT)
+        //road = SKSpriteNode(imageNamed: "road")
+        //road.size = CGSize(width: self.frame.width, height: ROAD_HEIGHT)
         road = SKSpriteNode(color: .darkGray, size: CGSize(width: self.frame.width, height: 150))
         road.position = CGPoint(x: self.frame.midX, y: self.frame.minY + road.size.height / 2)
         road.zPosition = -2
@@ -103,7 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.physicsBody?.allowsRotation = false
         addChild(skater)
         
-        // play button
+        // play again text
         play.fontSize = 100
         play.fontName = "AvenirNext-Bold"
         play.fontColor = .black
