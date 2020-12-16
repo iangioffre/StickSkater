@@ -16,6 +16,7 @@ import GameplayKit
 // author credit for garbage image: <div>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for dollar image: <div>Icons made by <a href="https://www.flaticon.com/free-icon/dollar_770062?related_item_id=770045&term=dollar%20bill" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for city image: <div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+// author credit for bird image: <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 enum PhysicsCategory: UInt32 {
     case skater = 1
@@ -33,17 +34,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacle = SKSpriteNode()
     var play = SKLabelNode()
     
+    var timer: Timer?
+    
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
         
+        setupGame()
+    }
+    
+    func setupGame() {
         setupSprites()
         self.isPaused = true
-        
-//        playerOptional = self.childNode(withName: "player") as? SKSpriteNode
-//        if let player = playerOptional {
-//            player.physicsBody?.categoryBitMask = PhysicsCategory.player
-//            player.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle
-//        }
+    }
+    
+    func restartGame() {
+        self.removeAllChildren()
+        setupSprites()
+        play.isHidden = true
+        self.isPaused = false
+        runObstacles()
+    }
+    
+    func gameOver() {
+        self.isPaused = true
+        timer?.invalidate()
+        timer = nil
+        play.isHidden = false
     }
     
     func setupSprites() {
@@ -77,9 +93,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.physicsBody?.allowsRotation = false
         addChild(skater)
         
-        // obstacles
-        addObstacle()
-        
         // buildings
         
         
@@ -95,10 +108,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if self.isPaused {
-            self.removeAllChildren()
-            setupSprites()
-            play.isHidden = true
-            self.isPaused = false
+            restartGame()
         } else {
             let skaterGroundPosition = road.position.y + (road.size.height / 2) + (skater.size.height / 2) + 5
             if skater.position.y <= skaterGroundPosition {
@@ -110,28 +120,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.categoryBitMask == PhysicsCategory.obstacle.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.obstacle.rawValue {
             // obstacle has been contacted by skater
-            self.isPaused = true
-//            let alertController = UIAlertController(title: "Game Over", message: "You hit an obstacle!", preferredStyle: .alert)
-//            alertController.addAction(UIAlertAction(title: "Try Again", style: .default, handler: nil))
-//            if let viewController = viewControllerOptional {
-//                viewController.present(alertController, animated: true, completion: nil)
-//            }
-            play.isHidden = false
+            gameOver()
         }
     }
     
-    func addObstacle() {
+    func addRandomObstacle() {
         // pick random obstacle
-        obstacle = SKSpriteNode(imageNamed: "cone")
-        // add obstacle to scene
-        obstacle.size = CGSize(width: 100, height: 100)
-        obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + 50)
-        obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -35, dy: 0), duration: 0.1)))
+        let randNum = arc4random_uniform(3)
+        if randNum == 0 {
+            obstacle = SKSpriteNode(imageNamed: "bird")
+            obstacle.size = CGSize(width: 100, height: 100)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + (obstacle.size.height / 2) + 300)
+        } else if randNum == 1 {
+            obstacle = SKSpriteNode(imageNamed: "cone")
+            obstacle.size = CGSize(width: 90, height: 90)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + (obstacle.size.height / 2))
+        } else if randNum == 2 {
+            obstacle = SKSpriteNode(imageNamed: "garbage")
+            obstacle.size = CGSize(width: 100, height: 120)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2)  + (obstacle.size.height / 2))
+        }
+        obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -40, dy: 0), duration: 0.1)))
         obstacle.physicsBody = SKPhysicsBody(texture: obstacle.texture!, size: obstacle.size)
         obstacle.physicsBody?.affectedByGravity = false
         obstacle.physicsBody?.allowsRotation = false
         obstacle.physicsBody?.categoryBitMask = PhysicsCategory.obstacle.rawValue
         obstacle.physicsBody?.contactTestBitMask = PhysicsCategory.skater.rawValue
         addChild(obstacle)
+    }
+    
+    func runObstacles() {
+        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
+            self.addRandomObstacle()
+        })
     }
 }
