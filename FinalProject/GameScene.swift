@@ -140,7 +140,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             obstacle.size = CGSize(width: 100, height: 120)
             obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2)  + (obstacle.size.height / 2))
         }
-        obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -40, dy: 0), duration: 0.1)))
+        let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - obstacle.size.width / 2, y: obstacle.position.y), duration: 3)
+        obstacle.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
         obstacle.physicsBody = SKPhysicsBody(texture: obstacle.texture!, size: obstacle.size)
         obstacle.physicsBody?.affectedByGravity = false
         obstacle.physicsBody?.allowsRotation = false
