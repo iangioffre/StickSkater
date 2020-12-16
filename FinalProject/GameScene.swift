@@ -30,11 +30,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var skater = SKSpriteNode()
     var background = SKSpriteNode()
+    var ground = SKSpriteNode()
     var road = SKSpriteNode()
     var obstacle = SKSpriteNode()
+    var backgroundSprite = SKSpriteNode()
     var play = SKLabelNode()
     
-    var timer: Timer?
+    var obstacleTimer: Timer?
+    var backgroundSpriteTimer: Timer?
     
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
@@ -53,12 +56,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         play.isHidden = true
         self.isPaused = false
         runObstacles()
+        runBackgroundSprites()
     }
     
     func gameOver() {
         self.isPaused = true
-        timer?.invalidate()
-        timer = nil
+        obstacleTimer?.invalidate()
+        obstacleTimer = nil
+        backgroundSpriteTimer?.invalidate()
+        backgroundSpriteTimer = nil
         play.isHidden = false
     }
     
@@ -66,15 +72,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // background
         background = SKSpriteNode(imageNamed: "background")
         background.size = CGSize(width: self.frame.width, height: self.frame.height)
-        background.zPosition = -2
+        background.zPosition = -4
         addChild(background)
+        ground = SKSpriteNode(color: .lightGray, size: CGSize(width: self.frame.width, height: self.frame.height / 2 - 100))
+        ground.position = CGPoint(x: self.frame.midX, y: self.frame.minY + ground.size.height / 2)
+        ground.zPosition = -3
+        addChild(ground)
         
         // road (floor)
 //        road = SKSpriteNode(imageNamed: "road")
 //        road.size = CGSize(width: self.frame.width, height: ROAD_HEIGHT)
         road = SKSpriteNode(color: .gray, size: CGSize(width: self.frame.width, height: 150))
         road.position = CGPoint(x: self.frame.midX, y: self.frame.minY + road.size.height / 2)
-        road.zPosition = -1
+        road.zPosition = -2
         road.physicsBody = SKPhysicsBody(rectangleOf: road.size)
         road.physicsBody?.isDynamic = false
         road.physicsBody?.categoryBitMask = PhysicsCategory.road.rawValue
@@ -92,9 +102,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.physicsBody?.restitution = 0
         skater.physicsBody?.allowsRotation = false
         addChild(skater)
-        
-        // buildings
-        
         
         // play button
         play.fontSize = 100
@@ -151,8 +158,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func runObstacles() {
-        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
+        obstacleTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
             self.addRandomObstacle()
+        })
+    }
+    
+    func addBackgroundSprite() {
+        backgroundSprite = SKSpriteNode(imageNamed: "building")
+        backgroundSprite.size = CGSize(width: 400, height: 400)
+        backgroundSprite.position = CGPoint(x: self.frame.maxX + backgroundSprite.size.width / 2, y: road.position.y + (road.size.height / 2) + (backgroundSprite.size.height / 2) + 50)
+        backgroundSprite.zPosition = -1
+        let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - backgroundSprite.size.width / 2, y: backgroundSprite.position.y), duration: 6)
+        backgroundSprite.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
+        addChild(backgroundSprite)
+    }
+    
+    func runBackgroundSprites() {
+        backgroundSpriteTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { (timer) in
+            self.addBackgroundSprite()
         })
     }
 }
