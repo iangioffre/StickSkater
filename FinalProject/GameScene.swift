@@ -22,6 +22,7 @@ enum PhysicsCategory: UInt32 {
     case skater = 1
     case obstacle = 2
     case road = 4
+    case money = 8
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -35,9 +36,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacle = SKSpriteNode()
     var backgroundSprite = SKSpriteNode()
     var play = SKLabelNode()
+    var money = SKSpriteNode()
     
+    var score = 0 {
+        didSet {
+            // change score label
+        }
+    }
+
     var obstacleTimer: Timer?
     var backgroundSpriteTimer: Timer?
+    var moneyTimer: Timer?
+
     
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
@@ -55,8 +65,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupSprites()
         play.isHidden = true
         self.isPaused = false
+        runMoney()
         runObstacles()
         runBackgroundSprites()
+        
     }
     
     func gameOver() {
@@ -97,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.position = CGPoint(x: self.frame.minX + 200, y: road.position.y + (road.size.height / 2) + (skater.size.height / 2))
         skater.physicsBody = SKPhysicsBody(texture: skater.texture!, size: skater.size)
         skater.physicsBody?.categoryBitMask = PhysicsCategory.skater.rawValue
-        skater.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle.rawValue
+        skater.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle.rawValue | PhysicsCategory.money.rawValue
         skater.physicsBody?.collisionBitMask = PhysicsCategory.road.rawValue
         skater.physicsBody?.restitution = 0
         skater.physicsBody?.allowsRotation = false
@@ -128,6 +140,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if contact.bodyA.categoryBitMask == PhysicsCategory.obstacle.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.obstacle.rawValue {
             // obstacle has been contacted by skater
             gameOver()
+        }
+        else if contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.money.rawValue {
+            contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
+            score += 1
+            print("score: \(score)")
         }
     }
     
@@ -176,6 +193,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func runBackgroundSprites() {
         backgroundSpriteTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { (timer) in
             self.addBackgroundSprite()
+        })
+    }
+    
+    func addMoney() {
+        money = SKSpriteNode(imageNamed: "dollar")
+        money.size = CGSize(width: 100, height: 100)
+        let randYPosition = arc4random_uniform(400)
+        print(randYPosition)
+        money.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + CGFloat(randYPosition))
+        print(money.position.y)
+        let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - money.size.width / 2, y: money.position.y), duration: 3)
+        money.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
+        money.physicsBody = SKPhysicsBody(texture: money.texture!, size: money.size)
+        money.physicsBody?.affectedByGravity = false
+        money.physicsBody?.allowsRotation = false
+        money.physicsBody?.categoryBitMask = PhysicsCategory.money.rawValue
+        money.physicsBody?.contactTestBitMask = PhysicsCategory.skater.rawValue
+        addChild(money)
+    }
+    
+    func runMoney() {
+        moneyTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { (timer) in
+            self.addMoney()
         })
     }
 }
