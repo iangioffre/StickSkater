@@ -34,6 +34,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundSprite = SKSpriteNode()
     var play = SKLabelNode()
     var money = SKSpriteNode()
+    var highScoreLabel = SKLabelNode()
+    var highScore = 0 {
+        didSet {
+            highScoreLabel.text = "High Score: \(highScore)"
+        }
+    }
     
     var moneyPickupAllowed = true
     var scoreLabel = SKLabelNode()
@@ -56,6 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupGame() {
         setupSprites()
+        highScore = 0
         self.isPaused = true
     }
     
@@ -79,6 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         moneyTimer?.invalidate()
         moneyTimer = nil
         play.isHidden = false
+        updateHighScore()
     }
     
     func setupSprites() {
@@ -121,6 +129,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.position = CGPoint(x: self.frame.minX + 100, y: self.frame.maxY - 50)
         score = 0
         addChild(scoreLabel)
+        
+        //highScore Label
+        highScoreLabel.fontSize = 50
+        highScoreLabel.position = CGPoint(x: self.frame.maxX - 160, y: self.frame.maxY - 50)
+        addChild(highScoreLabel)
         
         // play again text
         play.fontSize = 100
@@ -233,5 +246,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.moneyCooldownTimer?.invalidate()
             self.moneyCooldownTimer = nil
         })
+    }
+    
+    func updateHighScore() {
+        if score > highScore {
+            self.highScore = score
+        }
     }
 }
