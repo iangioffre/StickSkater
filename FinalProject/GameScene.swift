@@ -78,6 +78,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         obstacleTimer = nil
         backgroundSpriteTimer?.invalidate()
         backgroundSpriteTimer = nil
+        moneyTimer?.invalidate()
+        moneyTimer = nil
         play.isHidden = false
     }
     
