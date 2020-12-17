@@ -39,7 +39,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var money = SKSpriteNode()
     var score = 0
     
-
+    var score = 0 {
+        didSet {
+            // change score label
+        }
+    }
 
     var obstacleTimer: Timer?
     var backgroundSpriteTimer: Timer?
@@ -139,6 +143,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             gameOver()
         }
         else if contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.money.rawValue {
+            contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
             score += 1
             print("score: \(score)")
         }
@@ -146,11 +151,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addRandomObstacle() {
         // pick random obstacle
-        obstacle = SKSpriteNode(imageNamed: "cone")
-        // add obstacle to scene
-        obstacle.size = CGSize(width: 100, height: 100)
-        obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + 50)
-        obstacle.run(SKAction.repeatForever(SKAction.move(by: CGVector(dx: -35, dy: 0), duration: 0.1)))
+        let randNum = arc4random_uniform(3)
+        if randNum == 0 {
+            obstacle = SKSpriteNode(imageNamed: "bird")
+            obstacle.size = CGSize(width: 100, height: 100)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + (obstacle.size.height / 2) + 300)
+        } else if randNum == 1 {
+            obstacle = SKSpriteNode(imageNamed: "cone")
+            obstacle.size = CGSize(width: 90, height: 90)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + (obstacle.size.height / 2))
+        } else if randNum == 2 {
+            obstacle = SKSpriteNode(imageNamed: "garbage")
+            obstacle.size = CGSize(width: 100, height: 120)
+            obstacle.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2)  + (obstacle.size.height / 2))
+        }
+        let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - obstacle.size.width / 2, y: obstacle.position.y), duration: 3)
+        obstacle.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
         obstacle.physicsBody = SKPhysicsBody(texture: obstacle.texture!, size: obstacle.size)
         obstacle.physicsBody?.affectedByGravity = false
         obstacle.physicsBody?.allowsRotation = false
@@ -186,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         money.size = CGSize(width: 100, height: 100)
         let randYPosition = arc4random_uniform(400)
         print(randYPosition)
-        money.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + CGFloat(randYPosition))
+        money.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + CGFloat(randYPosition))
         print(money.position.y)
         let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - money.size.width / 2, y: money.position.y), duration: 3)
         money.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
