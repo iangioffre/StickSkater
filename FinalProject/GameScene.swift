@@ -39,9 +39,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var money = SKSpriteNode()
     var score = 0
     
+    var scoreLabel = SKLabelNode()
     var score = 0 {
         didSet {
-            // change score label
+            scoreLabel.text = "Score: \(score)"
         }
     }
 
@@ -116,6 +117,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.physicsBody?.allowsRotation = false
         addChild(skater)
         
+        // score label
+        scoreLabel.fontSize = 50
+        scoreLabel.position = CGPoint(x: self.frame.minX + 100, y: self.frame.maxY - 50)
+        score = 0
+        addChild(scoreLabel)
+        
         // play again text
         play.fontSize = 100
         play.fontName = "AvenirNext-Bold"
@@ -145,7 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.money.rawValue {
             contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
             score += 1
-            print("score: \(score)")
+            print("Score: \(score)")
         }
     }
     
