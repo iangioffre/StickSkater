@@ -5,19 +5,16 @@
 //  Created by Kierin Noreen, Ian Gioffre on 11/29/20.
 //  Copyright © 2020 Kierin Noreen. All rights reserved.
 //
-
 import SpriteKit
 import GameplayKit
 
 // author credit for background.png: Emmett Zinda
-
 // author credit for skater image: <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for cone image: <div>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for garbage image: <div>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for dollar image: <div>Icons made by <a href="https://www.flaticon.com/free-icon/dollar_770062?related_item_id=770045&term=dollar%20bill" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for city image: <div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 // author credit for bird image: <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
 enum PhysicsCategory: UInt32 {
     case skater = 1
     case obstacle = 2
@@ -37,7 +34,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var backgroundSprite = SKSpriteNode()
     var play = SKLabelNode()
     var money = SKSpriteNode()
-    var score = 0
     
     var scoreLabel = SKLabelNode()
     var score = 0 {
@@ -79,6 +75,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         obstacleTimer = nil
         backgroundSpriteTimer?.invalidate()
         backgroundSpriteTimer = nil
+        moneyTimer?.invalidate()
+        moneyTimer = nil
         play.isHidden = false
     }
     
