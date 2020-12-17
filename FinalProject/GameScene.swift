@@ -35,6 +35,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var play = SKLabelNode()
     var money = SKSpriteNode()
     
+    var moneyPickupAllowed = true
     var scoreLabel = SKLabelNode()
     var score = 0 {
         didSet {
@@ -45,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var obstacleTimer: Timer?
     var backgroundSpriteTimer: Timer?
     var moneyTimer: Timer?
-
+    var moneyCooldownTimer: Timer?
     
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
@@ -143,14 +144,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        if contact.bodyA.categoryBitMask == PhysicsCategory.obstacle.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.obstacle.rawValue {
+        print("contact")
+        if contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.money.rawValue {
+            contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
+            if moneyPickupAllowed {
+                score += 1
+                moneyPickupAllowed = false
+                runMoneyCooldownTimer()
+            }
+        } else if contact.bodyA.categoryBitMask == PhysicsCategory.obstacle.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.obstacle.rawValue {
             // obstacle has been contacted by skater
             gameOver()
-        }
-        else if contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue || contact.bodyB.categoryBitMask == PhysicsCategory.money.rawValue {
-            contact.bodyA.categoryBitMask == PhysicsCategory.money.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
-            score += 1
-            print("Score: \(score)")
         }
     }
     
@@ -206,9 +210,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         money = SKSpriteNode(imageNamed: "dollar")
         money.size = CGSize(width: 100, height: 100)
         let randYPosition = arc4random_uniform(400)
-        print(randYPosition)
         money.position = CGPoint(x: self.frame.maxX + obstacle.size.width / 2, y: road.position.y + (road.size.height / 2) + CGFloat(randYPosition))
-        print(money.position.y)
         let moveAction = SKAction.move(to: CGPoint(x: self.frame.minX - money.size.width / 2, y: money.position.y), duration: 3)
         money.run(SKAction.sequence([moveAction, SKAction.removeFromParent()]))
         money.physicsBody = SKPhysicsBody(texture: money.texture!, size: money.size)
@@ -220,8 +222,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func runMoney() {
-        moneyTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { (timer) in
+        moneyTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true, block: { (timer) in
             self.addMoney()
+        })
+    }
+    
+    func runMoneyCooldownTimer() {
+        moneyCooldownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { (timer) in
+            self.moneyPickupAllowed = true
+            self.moneyCooldownTimer?.invalidate()
+            self.moneyCooldownTimer = nil
         })
     }
 }
